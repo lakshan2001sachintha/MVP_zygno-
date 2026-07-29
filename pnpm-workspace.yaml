@@ -1,0 +1,7 @@
+allowBuilds:
+  "@sentry/cli": true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - "@tanstack/router-cli@1.167.21"
+  - "@tanstack/router-generator@1.167.21"
+  - "@tanstack/router-plugin@1.168.22"
