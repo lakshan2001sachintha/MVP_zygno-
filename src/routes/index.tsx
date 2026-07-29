@@ -18,8 +18,8 @@ function HomePage() {
           Manage your institute, simplified.
         </h1>
         <p className="mb-8 max-w-2xl text-base text-[var(--sea-ink-soft)] sm:text-lg">
-          A modern platform for administrators, teachers, and students to manage courses,
-          track modules, and collaborate — all from one unified dashboard.
+          A modern platform for administrators, teachers, and students to manage courses, track
+          modules, and collaborate — all from one unified dashboard.
         </p>
         <div className="flex flex-wrap gap-3">
           {user ? (
@@ -69,10 +69,22 @@ function HomePage() {
       {/* Feature Cards */}
       <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          ["Role-Based Access", "Admin, Teacher, and Student dashboards with tailored permissions and views."],
-          ["Module Management", "Create, edit, and browse educational modules with teacher assignments."],
-          ["Teacher Approval", "Admins approve teacher profiles before granting module management access."],
-          ["Real-Time Stats", "Dashboard counters and user registries update instantly from the database."],
+          [
+            "Role-Based Access",
+            "Admin, Teacher, and Student dashboards with tailored permissions and views.",
+          ],
+          [
+            "Module Management",
+            "Create, edit, and browse educational modules with teacher assignments.",
+          ],
+          [
+            "Teacher Approval",
+            "Admins approve teacher profiles before granting module management access.",
+          ],
+          [
+            "Real-Time Stats",
+            "Dashboard counters and user registries update instantly from the database.",
+          ],
         ].map(([title, desc], index) => (
           <article
             key={title}
@@ -90,7 +102,8 @@ function HomePage() {
         <section className="island-shell mt-8 rounded-2xl p-6">
           <p className="island-kicker mb-2">Welcome, {user.fullName}</p>
           <p className="text-sm text-[var(--sea-ink-soft)]">
-            You are logged in as <strong className="text-[var(--sea-ink)]">{user.role}</strong>. Use the navigation above to access your workspace.
+            You are logged in as <strong className="text-[var(--sea-ink)]">{user.role}</strong>. Use
+            the navigation above to access your workspace.
           </p>
         </section>
       )}

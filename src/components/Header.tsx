@@ -1,6 +1,8 @@
 import { Link, useRouter, useRouteContext } from "@tanstack/react-router";
-import { logoutFn } from "#/utils/auth";
 import { toast } from "sonner";
+
+import { logoutFn } from "#/utils/auth";
+
 import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
@@ -37,25 +39,41 @@ export default function Header() {
           <Link to="/" className="nav-link" activeProps={{ className: "nav-link is-active" }}>
             Home
           </Link>
-          
+
           {user ? (
             <>
               {user.role === "admin" && (
-                <Link to="/admin" className="nav-link" activeProps={{ className: "nav-link is-active" }}>
+                <Link
+                  to="/admin"
+                  className="nav-link"
+                  activeProps={{ className: "nav-link is-active" }}
+                >
                   Admin Dashboard
                 </Link>
               )}
               {user.role === "teacher" && (
-                <Link to="/teacher" className="nav-link" activeProps={{ className: "nav-link is-active" }}>
+                <Link
+                  to="/teacher"
+                  className="nav-link"
+                  activeProps={{ className: "nav-link is-active" }}
+                >
                   Teacher Workspace
                 </Link>
               )}
-              <Link to="/modules" className="nav-link" activeProps={{ className: "nav-link is-active" }}>
+              <Link
+                to="/modules"
+                className="nav-link"
+                activeProps={{ className: "nav-link is-active" }}
+              >
                 Module Explorer
               </Link>
             </>
           ) : (
-            <Link to="/about" className="nav-link" activeProps={{ className: "nav-link is-active" }}>
+            <Link
+              to="/about"
+              className="nav-link"
+              activeProps={{ className: "nav-link is-active" }}
+            >
               About
             </Link>
           )}
@@ -77,8 +95,9 @@ export default function Header() {
           ) : (
             <Link
               to="/login"
-              className="rounded-full bg-[var(--lagoon-deep)] hover:bg-[rgba(79,184,178,0.8)] px-4 py-2 text-xs font-semibold text-white no-underline transition"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm font-semibold text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
             >
+              <span className="h-2 w-2 rounded-full bg-[linear-gradient(90deg,#56c6be,#7ed3bf)]" />
               Sign In
             </Link>
           )}
@@ -88,4 +107,3 @@ export default function Header() {
     </header>
   );
 }
-

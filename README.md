@@ -1,112 +1,97 @@
-# Zygno Education Institute Management System (Mini-MVP)
+# Zygno Education Institute Management System
 
-A simplified Education Institute Management System built as a Mini-MVP for the Full-Stack Developer Intern Assignment.
+A Supabase-backed mini-MVP for managing institute users and educational modules. It provides distinct Admin, Teacher, and Student experiences while retaining the TanStack Start stack supplied in the starter repository.
 
-**Engines:** Node ≥ 24, pnpm ≥ 11.
+## Features
 
----
+- Email/password authentication with Student, Teacher, and Admin roles
+- Admin dashboard with active-student, teacher, and module totals; recent activity; user creation; and teacher approval
+- Full module CRUD for admins
+- Teacher workspace limited to modules assigned to the signed-in teacher
+- Student module explorer with credit and instructor details
+- Server-side authorization plus PostgreSQL Row Level Security (RLS)
+- Responsive light/dark interface
 
-## How to Run Locally
+## Local setup
 
-### 1. Clone the Repository
+Requirements: Node.js 24 or newer and pnpm 11 or newer.
 
-```bash
-git clone https://github.com/lakshan2001sachintha/MVP_zygno-.git
-cd MVP_zygno-
-```
+1. Clone the repository and install dependencies:
 
-### 2. Install Dependencies
+   ```bash
+   git clone <your-repository-url>
+   cd <repository-directory>
+   pnpm install
+   ```
 
-```bash
-pnpm install
-```
+2. Create a free [Supabase](https://supabase.com/) project. In its SQL Editor, run [`supabase/schema.sql`](./supabase/schema.sql). The query is compatible with the supplied `profiles` and `modules` tables and can also create them in a new project.
 
-### 3. Set Up Supabase
+3. Create `.env` in the project root:
 
-1. Create a free project at [supabase.com](https://supabase.com/).
-2. Go to **SQL Editor** and run the database schema script found in [`ASSIGNMENT_GUIDE.md`](./ASSIGNMENT_GUIDE.md) (Step 1).
-3. Go to **Project Settings → API** and copy your **Project URL** and **Anon Key**.
+   ```env
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_PUBLISHABLE_KEY=your-publishable-or-anon-key
+   ```
 
-### 4. Configure Environment Variables
+   Find these values in Supabase Project Settings under API Keys. Never commit `.env`.
 
-Create a `.env` file in the project root:
+4. Start the application:
 
-```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_PUBLISHABLE_KEY=your-anon-key-here
-```
+   ```bash
+   pnpm dev
+   ```
 
-### 5. Start the Dev Server
+   Open `http://localhost:3000`.
 
-```bash
-pnpm dev
-```
+## First administrator
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Public signup intentionally permits only Student and Teacher accounts. This prevents a visitor from assigning themselves administrator access.
 
----
+1. Sign up once through the application with the email that should own the initial admin account.
+2. In the Supabase SQL Editor, run:
 
-## Tech Stack
+   ```sql
+   update public.profiles
+   set role = 'admin', is_approved = true
+   where email = 'your-admin@example.com';
+   ```
 
-| Layer          | Technology                                                    |
-| -------------- | ------------------------------------------------------------- |
-| Framework      | [TanStack Start](https://tanstack.com/start) (SSR React)     |
-| Routing        | [TanStack Router](https://tanstack.com/router) (file-based)  |
-| Server         | [Nitro](https://nitro.build/) (`node-server` preset)          |
-| Auth & DB      | [Supabase](https://supabase.com/) (PostgreSQL + Auth)         |
-| Styling        | [Tailwind CSS v4](https://tailwindcss.com/) + Shadcn UI       |
-| Language       | TypeScript                                                    |
-| Forms          | [TanStack Form](https://tanstack.com/form) + Zod              |
-| Data Fetching  | [TanStack Query](https://tanstack.com/query)                  |
-| Testing        | [Vitest](https://vitest.dev/)                                 |
+3. Sign out and back in. The Admin Dashboard can then create additional Admin, Teacher, or Student users. Newly self-registered teachers remain pending until an admin approves them.
 
-### Why This Stack?
+## Role behavior
 
-- **TanStack Start** provides full-stack SSR React with type-safe routing and server functions, eliminating the need for a separate API layer.
-- **Supabase** gives us authentication, a PostgreSQL database, and Row Level Security policies out of the box — no need to build auth from scratch.
-- **Tailwind CSS + Shadcn UI** enables rapid, consistent UI development with utility-first styling.
-- **TypeScript** catches bugs at compile time and provides excellent DX with autocomplete and type inference.
+| Capability            | Admin      | Teacher                              | Student |
+| --------------------- | ---------- | ------------------------------------ | ------- |
+| View module catalogue | Yes        | Yes                                  | Yes     |
+| Create modules        | Yes        | Yes, assigned to self after approval | No      |
+| Edit/delete modules   | Any module | Assigned modules after approval      | No      |
+| View/create users     | Yes        | No                                   | No      |
+| Approve teachers      | Yes        | No                                   | No      |
 
----
+Authorization is checked in TanStack server functions and enforced again by Supabase RLS. Client-side route guards are for navigation and user experience, not the security boundary.
 
-## Core Features
+## Tech stack and choices
 
-1. **User Management (Role-Based):** Admin, Teacher, Student roles via Supabase Auth. Admins can view all users and create new ones.
-2. **Module/Course Management:** CRUD operations on educational modules with title, description, credits, and assigned teacher.
-3. **Admin Dashboard:** Stats overview (students, teachers, modules), user registry, teacher approval system.
-4. **Module Explorer:** Students browse available modules and see assigned instructors.
-5. **Teacher Workspace:** Teachers view and edit only their assigned modules.
+- **TanStack Start, Router, and React 19:** uses the repository's SSR and type-safe file routing foundation.
+- **TypeScript:** maintains typed server-function inputs and UI data.
+- **Supabase Auth and PostgreSQL:** supplies email/password authentication, relational data, and RLS without a separate API service.
+- **Tailwind CSS v4 and Shadcn UI:** provides a responsive component and utility styling system consistent with the starter.
+- **Sonner:** gives concise success and error feedback for mutations.
 
----
+The database source of truth is [`supabase/schema.sql`](./supabase/schema.sql). It creates `profiles` and `modules`, constraints, indexes, auth profile provisioning, role helper functions, and all RLS policies.
 
-## AI Usage
+## Commands
 
-I used **Antigravity (AI coding assistant)** during this project for:
-- Scaffolding new routes and server functions to match the existing TanStack Start patterns in the repository.
-- Generating Supabase RLS policies and database trigger functions.
-- Debugging cross-platform environment variable issues (Windows `NODE_OPTIONS` fix).
-- All architectural decisions, component structure, and state management patterns were my own choices — AI assisted with implementation speed, not design.
+| Command          | Purpose                                |
+| ---------------- | -------------------------------------- |
+| `pnpm dev`       | Run the local development server       |
+| `pnpm typecheck` | Type-check without emitting files      |
+| `pnpm lint`      | Run Oxlint                             |
+| `pnpm fmt:check` | Check formatting                       |
+| `pnpm test`      | Run Vitest tests                       |
+| `pnpm build`     | Validate and create a production build |
+| `pnpm start`     | Run the built server                   |
 
----
+## AI usage
 
-## Database Schema
-
-The full SQL schema (including tables, RLS policies, and triggers) is documented in [`ASSIGNMENT_GUIDE.md`](./ASSIGNMENT_GUIDE.md).
-
-Key tables:
-- **`profiles`**: User profiles with role (admin/teacher/student) and approval status
-- **`modules`**: Educational modules with teacher assignment
-
----
-
-## Scripts
-
-| Command                | Description                                             |
-| ---------------------- | ------------------------------------------------------- |
-| `pnpm dev`             | Start dev server on port 3000                           |
-| `pnpm build`           | Production build → `.output/`                           |
-| `pnpm start`           | Run production server                                   |
-| `pnpm test`            | Run Vitest                                              |
-| `pnpm typecheck`       | TypeScript type check                                   |
-| `pnpm lint`            | oxlint                                                  |
-| `pnpm fmt`             | oxfmt (format)                                          |
+I used a chat-based coding assistant to audit the supplied starter, implement focused TanStack Start server functions and views, review authorization boundaries, draft the Supabase schema/RLS policies, and help diagnose compiler and formatting feedback. The application was assembled within the provided repository rather than generated by an end-to-end app builder; architectural, security, and product decisions were reviewed during implementation.
