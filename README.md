@@ -1,16 +1,17 @@
 # Zygno Education Institute Management System
 
-A Supabase-backed mini-MVP for managing institute users and educational modules. It provides distinct Admin, Teacher, and Student experiences while retaining the TanStack Start stack supplied in the starter repository.
+A Supabase-backed mini-MVP for managing teacher approvals and educational modules. It provides distinct Admin, Teacher, and Student experiences while retaining the TanStack Start stack supplied in the starter repository.
 
 ## Features
 
 - Email/password authentication with Student, Teacher, and Admin roles
-- Admin dashboard with active-student, teacher, and module totals; recent activity; user creation; and teacher approval
+- Admin dashboard with institute totals, recent activity, and a focused pending-teacher approval queue
 - Full module CRUD for admins
 - Teacher workspace limited to modules assigned to the signed-in teacher
 - Student module explorer with credit and instructor details
 - Server-side authorization plus PostgreSQL Row Level Security (RLS)
-- Responsive light/dark interface
+- Self-registration for Student and Teacher accounts, with new teachers pending admin approval
+- Responsive light/dark interface with theme-aware controls
 
 ## Local setup
 
@@ -56,7 +57,28 @@ Public signup intentionally permits only Student and Teacher accounts. This prev
    where email = 'your-admin@example.com';
    ```
 
-3. Sign out and back in. The Admin Dashboard can then create additional Admin, Teacher, or Student users. Newly self-registered teachers remain pending until an admin approves them.
+3. Sign out and back in. The Admin Dashboard will now be available. Newly self-registered teachers remain in its pending-teacher queue until approved.
+
+## Application workflow
+
+### Admin
+
+1. Sign in using the bootstrapped administrator account.
+2. Open **Admin Dashboard** to view institute totals and recent activity.
+3. Review pending teachers by name and email.
+4. Select **Approve**. After Supabase confirms the update, that teacher disappears from the pending list.
+5. Open **Module Explorer** to create, assign, edit, or delete modules.
+
+### Teacher
+
+1. Sign up with the Teacher role and confirm the email if confirmation is enabled in Supabase.
+2. Wait for an administrator to approve the account.
+3. Open **Teacher Workspace** to create modules and manage only assigned modules.
+
+### Student
+
+1. Sign up with the Student role.
+2. Open **Module Explorer** to browse modules, credits, and assigned teachers.
 
 ## Role behavior
 
@@ -65,7 +87,7 @@ Public signup intentionally permits only Student and Teacher accounts. This prev
 | View module catalogue | Yes        | Yes                                  | Yes     |
 | Create modules        | Yes        | Yes, assigned to self after approval | No      |
 | Edit/delete modules   | Any module | Assigned modules after approval      | No      |
-| View/create users     | Yes        | No                                   | No      |
+| View pending teachers | Yes        | No                                   | No      |
 | Approve teachers      | Yes        | No                                   | No      |
 
 Authorization is checked in TanStack server functions and enforced again by Supabase RLS. Client-side route guards are for navigation and user experience, not the security boundary.
@@ -78,7 +100,16 @@ Authorization is checked in TanStack server functions and enforced again by Supa
 - **Tailwind CSS v4 and Shadcn UI:** provides a responsive component and utility styling system consistent with the starter.
 - **Sonner:** gives concise success and error feedback for mutations.
 
-The database source of truth is [`supabase/schema.sql`](./supabase/schema.sql). It creates `profiles` and `modules`, constraints, indexes, auth profile provisioning, role helper functions, and all RLS policies.
+The database source of truth is [`supabase/schema.sql`](./supabase/schema.sql). It is safe to run against the supplied tables: it preserves existing rows while creating missing objects and replacing the application-specific trigger, helper functions, and RLS policies.
+
+### Database tables
+
+| Table      | Purpose                                                                                 |
+| ---------- | --------------------------------------------------------------------------------------- |
+| `profiles` | Stores the Auth user profile, role, teacher approval status, and profile creation time. |
+| `modules`  | Stores module details, credits, assigned teacher, and creation/update timestamps.       |
+
+The application connects to the Supabase project configured by `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. The publishable key is used with authenticated sessions; authorization is enforced by server functions and database RLS policies.
 
 ## Commands
 
