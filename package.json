@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_OPTIONS='--import ./instrument.server.mjs' vite dev",
+    "dev": "cross-env NODE_OPTIONS=\"--import ./instrument.server.mjs\" vite dev",
     "generate-routes": "tsr generate",
     "build": "pnpm run check && pnpm run lingui:compile && vite build && pnpm run typecheck && cp instrument.server.mjs .output/server",
     "start": "node --env-file-if-exists=.env --import ./.output/server/instrument.server.mjs .output/server/index.mjs",
@@ -78,6 +78,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
     "babel-plugin-react-compiler": "^1.0.0",
+    "cross-env": "^10.1.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^29.1.1",
     "oxfmt": "^0.59.0",
