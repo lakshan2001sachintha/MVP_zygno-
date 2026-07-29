@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"--import ./instrument.server.mjs\" vite dev",
     "generate-routes": "tsr generate",
-    "build": "pnpm run check && pnpm run lingui:compile && vite build && pnpm run typecheck && node -e \"require('node:fs').copyFileSync('instrument.server.mjs','.output/server/instrument.server.mjs')\"",
+    "build": "pnpm run check && pnpm run lingui:compile && vite build && pnpm run typecheck && node -e \"const fs=require('node:fs');if(fs.existsSync('.output/server'))fs.copyFileSync('instrument.server.mjs','.output/server/instrument.server.mjs')\"",
     "start": "node --env-file-if-exists=.env --import ./.output/server/instrument.server.mjs .output/server/index.mjs",
     "test": "vitest run",
     "check": "pnpm run lint && pnpm run fmt:check",
