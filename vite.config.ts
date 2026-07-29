@@ -13,7 +13,7 @@ const config = defineConfig({
   plugins: [
     devtools(),
     lingui(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro(),
     tailwindcss(),
     tanstackStart(),
     sentryTanstackStart({
