@@ -19,6 +19,7 @@
     "yarn.lock",
     "bun.lock",
     "routeTree.gen.ts",
+    "src/locales/*/messages.js",
     ".tanstack-start/",
     ".tanstack/",
     "drizzle/",

@@ -1,15 +1,7 @@
-// src/lib/permissions.ts
-
 import { createServerFn } from "@tanstack/react-start";
 
 import { getSupabaseServerClient } from "#/utils/supabase";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-/**
- * All permission actions supported by the platform.
- * Mirrors the `permission_action` enum in the Supabase schema.
- */
 export type PermissionAction =
   | "create"
   | "read"
@@ -33,32 +25,46 @@ export type Permission = {
   action: PermissionAction;
 };
 
-// ─── Server Function ─────────────────────────────────────────────────────────
-
 /**
- * Fetches the current user's permissions via `get_my_permissions()`.
- * Returns [] when unauthenticated or the RPC errors — real enforcement
- * happens at the DB layer via RLS; this only drives UI visibility.
+ * Derives UI permissions from the current profile. Supabase RLS remains the
+ * security boundary; this list only controls visibility in React components.
  */
 export const fetchPermissionsFn = createServerFn({ method: "GET" }).handler(async () => {
   const supabase = getSupabaseServerClient();
-  const { data, error } = await supabase.rpc("get_my_permissions");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [] as Permission[];
 
-  if (error || !data) return [] as Permission[];
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, is_approved")
+    .eq("id", user.id)
+    .single();
 
-  return data as Permission[];
+  if (profile?.role === "admin") {
+    return ["create", "read", "update", "delete", "approve"].map((action) => ({
+      resource: "modules",
+      action: action as PermissionAction,
+    }));
+  }
+
+  if (profile?.role === "teacher" && profile.is_approved) {
+    return ["read", "create_self", "update_self", "delete_self"].map((action) => ({
+      resource: "modules",
+      action: action as PermissionAction,
+    }));
+  }
+
+  return [{ resource: "modules", action: "read" }] as Permission[];
 });
 
-// ─── Utility ─────────────────────────────────────────────────────────────────
-
-/**
- * Returns true if the given permissions list includes the specified resource + action pair.
- * Pure function — safe to call anywhere including outside React.
- */
 export function hasPermission(
   permissions: Permission[],
   resource: string,
   action: PermissionAction,
 ): boolean {
-  return permissions.some((p) => p.resource === resource && p.action === action);
+  return permissions.some(
+    (permission) => permission.resource === resource && permission.action === action,
+  );
 }

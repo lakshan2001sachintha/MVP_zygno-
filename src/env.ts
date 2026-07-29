@@ -7,9 +7,9 @@ export const envSchema = z.object({
   SUPABASE_URL: z.url().readonly(),
   SUPABASE_PUBLISHABLE_KEY: z.string().readonly(),
   SENTRY_AUTH_TOKEN: z.string().optional().readonly(),
-  VITE_SENTRY_DSN: z.url().readonly(),
-  VITE_SENTRY_ORG: z.string().readonly(),
-  VITE_SENTRY_PROJECT: z.string().readonly(),
+  VITE_SENTRY_DSN: z.url().optional().readonly(),
+  VITE_SENTRY_ORG: z.string().optional().readonly(),
+  VITE_SENTRY_PROJECT: z.string().optional().readonly(),
   VITE_SENTRY_ENV: sentryEnvSchema.default("local").readonly(),
 });
 

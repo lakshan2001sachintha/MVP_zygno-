@@ -36,8 +36,18 @@ const fetchUser = createServerFn({ method: "GET" }).handler(async () => {
     return null;
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, full_name, is_approved")
+    .eq("id", data.user.id)
+    .single();
+
   return {
+    id: data.user.id,
     email: data.user.email,
+    role: profile?.role ?? "student",
+    fullName: profile?.full_name ?? "Anonymous",
+    isApproved: profile?.is_approved ?? true,
   };
 });
 
